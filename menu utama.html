@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MBOTEE Store</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        let currentPage = 'home';  // Menyimpan halaman aktif
+
+        // Fungsi untuk set aktif tab di navbar
+        function setActiveTab(tab) {
+            document.querySelectorAll("nav a").forEach(link => {
+                link.classList.remove("bg-blue-600", "text-white", "px-4", "py-2", "rounded");
+            });
+            document.getElementById(tab).classList.add("bg-blue-600", "text-white", "px-4", "py-2", "rounded");
+            currentPage = tab;
+            renderPage();
+        }
+
+        // Fungsi untuk menambahkan item ke keranjang
+        function addToCart(product) {
+            let cart = JSON.parse(localStorage.getItem("cart")) || [];
+            cart.push(product);
+            localStorage.setItem("cart", JSON.stringify(cart));
+            alert(`${product.name} telah ditambahkan ke keranjang!`);
+        }
+
+        // Fungsi untuk menghapus item dari keranjang
+        function removeFromCart(index) {
+            let cart = JSON.parse(localStorage.getItem("cart")) || [];
+            cart.splice(index, 1);  // Menghapus item berdasarkan index
+            localStorage.setItem("cart", JSON.stringify(cart));
+            renderPage();  // Memperbarui tampilan setelah item dihapus
+        }
+
+        // Fungsi untuk menampilkan halaman sesuai tab yang dipilih
+        function renderPage() {
+            let content = '';
+            if (currentPage === 'home') {
+                content = `
+                    <h2 class="text-3xl font-bold text-center text-gray-900 mb-8">Produk Kami</h2>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
+                        <div class="bg-white p-4 rounded-lg shadow-lg hover:shadow-xl transition transform hover:-translate-y-1">
+                            <img src="https://th.bing.com/th/id/OIP.NSsJ5bZrhtEDb0taJOW9XgHaFc?w=271&h=199&c=7&r=0&o=5&dpr=1.5&pid=1.7" alt="New Balance 1960r protection pack" class="w-full h-40 object-cover rounded-md">
+                            <h3 class="text-lg font-bold text-gray-900 mt-2">New Balance 1960r Protection </h3>
+                            <p class="text-blue-500 font-semibold">Rp2.950.000</p>
+                            <button class="mt-2 w-full bg-blue-500 text-white py-2 rounded-md" onclick="addToCart({name: 'New Balance 1960r Protection Pack', price: 'Rp2.950.000'})">Tambahkan Keranjang</button>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow-lg hover:shadow-xl transition transform hover:-translate-y-1">
+                            <img src="https://th.bing.com/th/id/OIP.t0dGZxVHRtgCmEYMhD0lEAAAAA?w=280&h=200&c=7&r=0&o=5&dpr=1.5&pid=1.7" alt="Jaket Hoodie" class="w-full h-40 object-cover rounded-md">
+                            <h3 class="text-lg font-bold text-gray-900 mt-2">Nike Air Max TN Voltage </h3>
+                            <p class="text-blue-500 font-semibold">Rp1.550.000</p>
+                            <button class="mt-2 w-full bg-blue-500 text-white py-2 rounded-md" onclick="addToCart({name: 'Nike Air Max TN Voltage Purple', price: 'Rp1.550.000'})">Tambahkan Keranjang</button>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow-lg hover:shadow-xl transition transform hover:-translate-y-1">
+                            <img src="https://th.bing.com/th/id/OIP.G4BHa_WI5AqeiPh-T_NJNAHaFP?w=252&h=180&c=7&r=0&o=5&dpr=1.5&pid=1.7" alt="Sepatu Sneakers" class="w-full h-40 object-cover rounded-md">
+                            <h3 class="text-lg font-bold text-gray-900 mt-2">Adidas Campus 00s</h3>
+                            <p class="text-blue-500 font-semibold">Rp1.750.000</p>
+                            <button class="mt-2 w-full bg-blue-500 text-white py-2 rounded-md" onclick="addToCart({name: 'Adidas Campus 00s', price: 'Rp1.750.000'})">Tambahkan Keranjang</button>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow-lg hover:shadow-xl transition transform hover:-translate-y-1">
+                            <img src="https://th.bing.com/th/id/OIP.zSwRyPnwfRji9UXFNOsBVQHaFP?w=292&h=207&c=7&r=0&o=5&dpr=1.5&pid=1.7" alt="Tas Ransel" class="w-full h-40 object-cover rounded-md">
+                            <h3 class="text-lg font-bold text-gray-900 mt-2">Vans Knu School Black White</h3>
+                            <p class="text-blue-500 font-semibold">Rp1.550.000</p>
+                            <button class="mt-2 w-full bg-blue-500 text-white py-2 rounded-md" onclick="addToCart({name: 'Vans Knu School Black White', price: 'Rp1.550.000'})">Tambahkan Keranjang</button>
+                        </div>
+                    </div>
+                `;
+            } else if (currentPage === 'cart') {
+                const cart = JSON.parse(localStorage.getItem("cart")) || [];
+                if (cart.length === 0) {
+                    content = `<p class="text-center text-gray-900">Keranjang Anda kosong</p>`;
+                } else {
+                    content = `
+                        <h2 class="text-3xl font-bold text-center text-gray-900 mb-8">Keranjang Belanja</h2>
+                        <ul class="space-y-4">
+                            ${cart.map((item, index) => `
+                                <li class="flex justify-between bg-white p-4 rounded-lg shadow-lg">
+                                    <span>${item.name}</span>
+                                    <span>${item.price}</span>
+                                    <button onclick="removeFromCart(${index})" class="text-red-500">Hapus</button>
+                                </li>
+                            `).join('')}
+                        </ul>
+                        <div class="mt-4 text-center">
+                        <a href="pembayaran.html" class="bg-green-500 text-white py-2 px-4 rounded-md inline-block">Lanjutkan ke Pembayaran</a>
+                    </div>
+
+                    `;
+                }
+            } else if (currentPage === 'user') {
+                content = `
+                    <h2 class="text-3xl font-bold text-center text-gray-900 mb-8">Tentang Toko Kami</h2>
+                    <p class="text-center text-gray-700 mb-4">STY_Store adalah toko online yang menyediakan berbagai produk sepatu berkualitas. Kami selalu berusaha memberikan pelayanan terbaik bagi pelanggan kami.</p>
+                    <h3 class="text-2xl font-bold text-center text-gray-900 mb-4">Hubungi Kami</h3>
+                    <p class="text-center text-gray-700">Jika Anda memiliki pertanyaan, Anda dapat menghubungi kami melalui:</p>
+                    <div class="text-center mt-4">
+                        <p><a href="https://wa.me/6283845797502" class="text-blue-500 font-semibold">WhatsApp: 083845797502</a></p>
+                        <p><a href="https://instagram.com/svndyr" class="text-blue-500 font-semibold">Instagram: @svndyr</a></p>
+                    </div>
+                    <div class="mt-8">
+                        <h3 class="text-2xl font-bold text-center text-gray-900 mb-4">Lokasi Kami</h3>
+                        <p class="text-center text-gray-700">Kami berlokasi di Jl. Danau Kerinci V No.G6 C13, Sawojajar, Kec. Kedungkandang, Kota Malang, Jawa Timur 65139.</p>
+                        <div class="w-full h-64 mt-4">
+                            <!-- Gantilah dengan API Key Anda -->
+                            <iframe src="https://www.google.com/maps/embed/v1/place?q=Jl.+Danau+Kerinci+V+No.G6+C13,+Sawojajar,+Kec.+Kedungkandang,+Kota+Malang,+Jawa+Timur+65139&key=YOUR_GOOGLE_MAPS_API_KEY"
+                                width="100%" height="100%" frameborder="0" style="border:0;" allowfullscreen="" aria-hidden="false" tabindex="0"></iframe>
+                        </div>
+                    </div>
+                `;
+            }
+            document.getElementById('page-content').innerHTML = content;
+        }
+
+        window.onload = renderPage;
+    </script>
+</head>
+<body class="bg-gray-100">
+    <!-- Navbar -->
+    <header class="bg-blue-500 shadow-md p-4">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-white cursor-pointer" onclick="setActiveTab('home')">STY_Store</h1>
+            <div class="flex-1 mx-4">
+                <input type="text" placeholder="Cari produk..." class="w-full px-4 py-2 rounded-full border border-gray-300 focus:outline-none">
+            </div>
+            <div class="flex space-x-4">
+                <!-- Cart Icon with Text -->
+<a href="#" id="cart" class="text-white text-lg flex items-center gap-1" onclick="setActiveTab('cart')">
+    🛒 <span class="ml-1">Keranjang</span>
+</a>
+
+<!-- User Icon with Text -->
+<a href="#" id="user" class="text-white text-lg flex items-center gap-1" onclick="setActiveTab('user')">
+    👤 <span class="ml-1">Find Us</span>
+</a>
+
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="py-12" id="page-content"></main>
+
+    <!-- Footer -->
+    <footer class="bg-blue-500 text-white py-6 mt-8 text-center">
+        <p>&copy; 2025 MBOTEE. Semua Hak Dilindungi.</p>
+    </footer>
+</body>
+</html>
